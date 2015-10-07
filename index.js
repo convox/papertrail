@@ -6,11 +6,12 @@ require('winston-papertrail').Papertrail
 
 exports.handler = function(event, context) {
   // get app name from Kinesis record
+  // e.g. arn:aws:kinesis:us-east-1:901416387788:stream/convox-Kinesis-L6MUKT1VH451 -> convox
   var appName = "unknown"
 
   var parts = event.Records[0].eventSourceARN.split("/")
   if (parts.length == 2) {
-    appName = parts[1]
+    appName = parts[1].split("-")[0]
   }
 
   // get stack name from Lambda function name
@@ -45,7 +46,7 @@ exports.handler = function(event, context) {
       host: url.split(":")[0],
       port: url.split(":")[1],
       hostname: appName,
-      program: 'process',
+      program: 'default',
       showLevel: false,
     })
 
