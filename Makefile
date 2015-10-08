@@ -2,7 +2,7 @@
 
 VERSION=latest
 
-all: build
+all: clean build
 
 build: node_modules lambda.zip
 
