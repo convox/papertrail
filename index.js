@@ -1,6 +1,7 @@
 var aws = require('aws-sdk')
 var cf = new aws.CloudFormation()
 var fs = require('fs')
+var rollbar = require("rollbar")
 var winston = require('winston')
 require('winston-papertrail').Papertrail
 
@@ -43,6 +44,8 @@ function logRecords(url, event, context) {
 }
 
 exports.handler = function(event, context) {
+  rollbar.init("f67f25b8a9024d5690f997bd86bf14b0", { environment: "lambda" })
+
   // check /tmp/url for cached Papertrail URL
   fs.readFile('/tmp/url', function (err, url) {
     if (!err) {
@@ -55,6 +58,7 @@ exports.handler = function(event, context) {
 
     cf.describeStacks({ StackName: stackName }, function(err, data) {
       if (err) {
+        rollbar.handleError(err)
         console.log(err, err.stack)
         return context.fail(err)
       }
@@ -79,7 +83,6 @@ exports.handler = function(event, context) {
       fs.writeFileSync('/tmp/url', url)
 
       logRecords(url, event, context)
-    });
-
+    })
   })
 }
