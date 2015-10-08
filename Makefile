@@ -13,7 +13,7 @@ release: build
 	aws s3 cp lambda.zip s3://convox/lambda/papertrail.zip  --acl public-read
 
 node_modules:
-	npm install winston winston-papertrail
+	npm install rollbar winston winston-papertrail
 
 lambda.zip: index.js node_modules
 	zip -r lambda.zip index.js node_modules
