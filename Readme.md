@@ -1,28 +1,46 @@
 # convox/papertrail
 
-Send Kinesis events to Papertrail with a Lambda function.
+Send Kinesis events to Papertrail via a Lambda function.
 
 ## Development
 
 ```bash
 $ make
+npm install rollbar winston winston-papertrail
+...
+
 zip -r lambda.zip index.js node_modules
 updating: index.js (deflated 44%)
 updating: node_modules/ (stored 0%)
 updating: node_modules/winston/ (stored 0%)
 ...
+
+$ AWS_DEFAULT_PROFILE=release make release
+aws s3 cp lambda.zip s3://convox/lambda/papertrail.zip  --acl public-read
+upload: ./lambda.zip to s3://convox/lambda/papertrail.zip
 ```
 
-* Edit index.js and fill in the host and port of the Papertrail system. Run `make`
-* Open the [AWS Lambda Management Console](https://console.aws.amazon.com/lambda/home?region=us-east-1#/functions)
-* Click "Create a Lambda Function"
-* Click "kinesis-process-record"
-* Choose a Kinesis stream, i.e. stream/convox-Kinesis-1XZL3TCU9617V. Leave the other defaults. Click "Next"
-* Enter a name, i.e. "kernel-papertrail"
-* Click "Upload a .ZIP file", click the "Upload" button, and browse to lambda.zip
-* Choose "Kinesis execution role", in the popup window leave the defaults and click "Allow"
-* Select "30" for the timeout. Click "Next"
-* Click "Enable now". Click "Create function"
+## Design
+
+This Lambda function package is used in conjunction with the `convox services`
+commands:
+
+```bash
+$ convox services create papertrail pt
+$ convox services link pt --app myapp
+```
+
+It is intended to be configured and installed via CloudFormation.
+
+The handler introspects a CloudFormation stack matching the Lambda function
+name to find the Papertrail URL Parameter. It takes advantage of
+[container reuse](https://aws.amazon.com/blogs/compute/container-reuse-in-lambda/)
+and saves this setting on the /tmp file system to avoid excessive
+CloudFormation Describe Stack API calls.
+
+When the function has an EventSourceMapping (`convox services link`), it is
+invoked with Kinesis events which are sent to Papertrail over syslog via the
+[Winston](https://github.com/winstonjs/winston) library.
 
 ## Contributing
 
@@ -31,8 +49,7 @@ updating: node_modules/winston/ (stored 0%)
 
 ## See Also
 
-* [convox/app](https://github.com/convox/app)
-* [convox/kernel](https://github.com/convox/kernel)
+* [convox/rack](https://github.com/convox/rack)
 
 ## License
 
