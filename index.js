@@ -53,8 +53,9 @@ exports.handler = function(event, context) {
     }
 
     // get stack name from Lambda function name
-    // e.g. papertrail-PapertrailLogger-Y1HBW4I1TMB7 -> papertrail
-    var stackName = process.env.AWS_LAMBDA_FUNCTION_NAME.split("-")[0]
+    // e.g. my-cool-app-PapertrailLogger-Y1HBW4I1TMB7 -> my-cool-app
+    var parts = process.env.AWS_LAMBDA_FUNCTION_NAME.split("-")
+    var stackName = parts.slice(0,-2).join("-") // drop PapertrailLogger-YXXX
 
     cf.describeStacks({ StackName: stackName }, function(err, data) {
       if (err) {
