@@ -7,12 +7,15 @@ require('winston-papertrail').Papertrail
 
 function logRecords(url, event, context) {
   // get app name from Kinesis record
-  // e.g. arn:aws:kinesis:us-east-1:901416387788:stream/convox-Kinesis-L6MUKT1VH451 -> convox
+  // e.g. arn:aws:kinesis:us-east-1:901416387788:stream/myapp-staging-Kinesis-L6MUKT1VH451 -> myapp-staging
   var appName = "unknown"
 
   var parts = event.Records[0].eventSourceARN.split("/")
   if (parts.length == 2) {
-    appName = parts[1].split("-")[0]
+    kinesisName = parts[1]
+
+    parts = kinesisName.split("-")
+    appName = parts.slice(0,-2).join("-") // drop -Kinesis-YXXX
   }
 
   // connect to Papertrail
@@ -55,7 +58,7 @@ exports.handler = function(event, context) {
     // get stack name from Lambda function name
     // e.g. my-cool-app-PapertrailLogger-Y1HBW4I1TMB7 -> my-cool-app
     var parts = process.env.AWS_LAMBDA_FUNCTION_NAME.split("-")
-    var stackName = parts.slice(0,-2).join("-") // drop PapertrailLogger-YXXX
+    var stackName = parts.slice(0,-2).join("-") // drop -PapertrailLogger-YXXX
 
     cf.describeStacks({ StackName: stackName }, function(err, data) {
       if (err) {
