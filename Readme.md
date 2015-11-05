@@ -20,6 +20,14 @@ aws s3 cp lambda.zip s3://convox/lambda/papertrail.zip  --acl public-read
 upload: ./lambda.zip to s3://convox/lambda/papertrail.zip
 ```
 
+## Updating a production user
+
+Once you've released the function, it will become the default for all new users.
+
+If you need to update a exisiting lambda function, use a url of the form:
+
+*https://s3.amazonaws.com/convox-us-east-1/lambda/papertrail.zip*
+
 ## Design
 
 This Lambda function package is used in conjunction with the `convox services`
