@@ -49,6 +49,30 @@ invoked with Kinesis events which are sent to Papertrail over syslog via the
 * Open a [GitHub Issue](https://github.com/convox/papertrail/issues/new) for bugs and feature requests
 * Initiate a [GitHub Pull Request](https://help.github.com/articles/using-pull-requests/) for patches
 
+### Test Event
+
+```json
+{
+  "Records": [
+    {
+      "eventID": "shardId-000000000000:49545115243490985018280067714973144582180062593244200961",
+      "eventVersion": "1.0",
+      "kinesis": {
+        "partitionKey": "partitionKey-3",
+        "data": "d2ViOiBoZWxsbywgd29ybGQh",
+        "kinesisSchemaVersion": "1.0",
+        "sequenceNumber": "49545115243490985018280067714973144582180062593244200961"
+      },
+      "invokeIdentityArn": "arn:aws:iam::EXAMPLE",
+      "eventName": "aws:kinesis:record",
+      "eventSourceARN": "arn:aws:kinesis:us-east-1:901416387788:stream/myapp-staging-Kinesis-L6MUKT1VH451",
+      "eventSource": "aws:kinesis",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}
+```
+
 ## See Also
 
 * [convox/rack](https://github.com/convox/rack)
