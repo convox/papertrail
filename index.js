@@ -5,6 +5,8 @@ var rollbar = require("rollbar")
 var winston = require('winston')
 require('winston-papertrail').Papertrail
 
+var processNameMatcher = /^[^:\s]+\: /
+
 function logRecords(url, event, context) {
   // get app name from Kinesis record
   // e.g. arn:aws:kinesis:us-east-1:901416387788:stream/myapp-staging-Kinesis-L6MUKT1VH451 -> myapp-staging
@@ -33,6 +35,14 @@ function logRecords(url, event, context) {
   tr.on('connect', function() {
     event.Records.forEach(function(record) {
       var payload = new Buffer(record.kinesis.data, 'base64').toString('ascii')
+
+      //note: this format comes from: github.com/convox/agent
+      var tokens = payload.match(processNameMatcher)
+      if (tokens.length > 0) {
+        tr.program = tokens[0].replace(/: $/, '')
+        payload = payload.replace(processNameMatcher, '')
+      }
+
       logger.info(payload)
     })
 
