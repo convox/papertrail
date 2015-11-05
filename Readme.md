@@ -42,6 +42,8 @@ When the function has an EventSourceMapping (`convox services link`), it is
 invoked with Kinesis events which are sent to Papertrail over syslog via the
 [Winston](https://github.com/winstonjs/winston) library.
 
+![Architecture](https://github.com/convox/papertrail/raw/master/architecture.png "Architecture")
+
 ## Contributing
 
 * Open a [GitHub Issue](https://github.com/convox/papertrail/issues/new) for bugs and feature requests
